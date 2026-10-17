@@ -1,0 +1,125 @@
+# input_select.beer_brands
+# LVGL owns rendering on the visible 320x240 display. The capacitive strip
+# below it remains a raw touchscreen binary-sensor surface.
+
+globals:
+  - id: core2_screen
+    type: int
+    restore_value: false
+    initial_value: '0'
+
+image:
+  - platform: file
+    file: src/assets/images/corona.png
+    id: core2_menu_icon_corona
+    type: RGB565
+    transparency: alpha_channel
+    resize: 34x34
+
+script:
+  - id: core2_open_menu
+    then:
+      - globals.set: {id: core2_screen, value: '0'}
+      - lvgl.page.show: 
+
+lvgl:
+  displays: [core2_display]
+  touchscreens:
+    - touchscreen_id: core2_touchscreen
+  default_font: roboto_small
+  theme:
+    dark_mode: true
+  pages:
+    - id: core2_menu_page
+      bg_color: 0x000000
+      widgets:
+        - label:
+            x: 10
+            y: 5
+            text: Menu
+            text_font: roboto
+            text_color: 0xFFFFFF
+        - button:
+            x: 10
+            y: 40
+            width: 145
+            height: 88
+            radius: 0
+            bg_color: 0x1C1C20
+            border_width: 1
+            border_color: 0x69696E
+            on_click:
+              - script.execute: core2_open_lights
+            widgets:
+              - image:
+                  align: TOP_MID
+                  y: 12
+                  src: core2_menu_icon_lights
+              - label:
+                  align: BOTTOM_MID
+                  y: -10
+                  text: Lights
+                  text_color: 0xFFFFFF
+        - button:
+            x: 165
+            y: 40
+            width: 145
+            height: 88
+            radius: 0
+            bg_color: 0x1C1C20
+            border_width: 1
+            border_color: 0x69696E
+            on_click:
+              - script.execute: core2_open_climate
+            widgets:
+              - image:
+                  align: TOP_MID
+                  y: 14
+                  src: core2_menu_icon_corona
+              - label:
+                  align: BOTTOM_MID
+                  y: -10
+                  text: Climate
+                  text_color: 0xFFFFFF
+        - button:
+            x: 10
+            y: 136
+            width: 145
+            height: 88
+            radius: 0
+            bg_color: 0x1C1C20
+            border_width: 1
+            border_color: 0x69696E
+            on_click:
+              - script.execute: core2_open_media
+            widgets:
+              - image:
+                  align: TOP_MID
+                  y: 12
+                  src: core2_menu_icon_corona
+              - label:
+                  align: BOTTOM_MID
+                  y: -10
+                  text: Media
+                  text_color: 0xFFFFFF
+        - button:
+            x: 165
+            y: 136
+            width: 145
+            height: 88
+            radius: 0
+            bg_color: 0x1C1C20
+            border_width: 1
+            border_color: 0x69696E
+            on_click:
+              - script.execute: core2_open_weather
+            widgets:
+              - image:
+                  align: TOP_MID
+                  y: 12
+                  src: core2_menu_icon_corona
+              - label:
+                  align: BOTTOM_MID
+                  y: -10
+                  text: Weather
+                  text_color: 0xFFFFFF

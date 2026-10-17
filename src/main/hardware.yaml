@@ -1,0 +1,80 @@
+esp32:
+  board: m5stack-core2
+  framework:
+    type: arduino
+
+psram:
+  mode: quad
+  speed: 80MHz
+
+external_components:
+  - source: github://martydingo/esphome-axp192
+    components: [axp192]
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+
+i2c:
+  - id: bus_a
+    sda: GPIO21
+    scl: GPIO22
+    scan: true
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto
+    size: 24
+    bpp: 4
+  - file: "gfonts://Roboto"
+    id: roboto_small
+    size: 16
+    bpp: 4
+  - file: "gfonts://Roboto"
+    id: roboto_large
+    size: 48
+    bpp: 4
+
+image:
+  - platform: file
+    file: src/assets/images/light.png
+    id: core2_light_power_icon
+    type: RGB565
+    transparency: alpha_channel
+    resize: 36x36
+
+# powers the display/backlight rails and exposes the battery level
+sensor:
+  - platform: axp192
+    id: axp192_id
+    model: M5CORE2
+    address: 0x34
+    i2c_id: bus_a
+    update_interval: 30s
+    battery_level:
+      id: core2_battery_level
+      name: "${friendly_name} Battery Level"
+
+display:
+  - platform: mipi_spi
+    id: core2_display
+    model: M5CORE2
+    auto_clear_enabled: false
+    update_interval: never
+
+touchscreen:
+  - platform: ft63x6
+    id: core2_touchscreen
+    interrupt_pin: GPIO39
+    on_touch:
+      - script.execute:
+          id: core2_register_activity
+          source: "touch"
+
+time:
+  - platform: bm8563
+    update_interval: never
+  - platform: homeassistant
+    on_time_sync:
+      then:
+        bm8563.write_time:
