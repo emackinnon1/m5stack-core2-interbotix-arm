@@ -58,18 +58,16 @@ script:
     then:
       - homeassistant.action:
           action: input_select.select_previous
-          target:
-            entity_id: input_select.beer_brands
           data:
-            cycle: true
+            entity_id: input_select.beer_brands
+            cycle: "true"
   - id: core2_select_next_beer
     then:
       - homeassistant.action:
           action: input_select.select_next
-          target:
-            entity_id: input_select.beer_brands
           data:
-            cycle: true
+            entity_id: input_select.beer_brands
+            cycle: "true"
   - id: core2_open_selected_beer
     then:
       - if:
