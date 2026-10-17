@@ -1,26 +1,87 @@
-# input_select.beer_brands
-# LVGL owns rendering on the visible 320x240 display. The capacitive strip
-# below it remains a raw touchscreen binary-sensor surface.
-
-globals:
-  - id: core2_screen
-    type: int
-    restore_value: false
-    initial_value: '0'
-
 image:
   - platform: file
-    file: src/assets/images/corona.png
-    id: core2_menu_icon_corona
+    file: src/assets/images/beer-bottle.png
+    id: core2_menu_icon_beer
     type: RGB565
     transparency: alpha_channel
     resize: 34x34
 
+text_sensor:
+  - platform: homeassistant
+    id: beer_brand
+    entity_id: input_select.beer_brands
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: beer_brand_label
+            text: !lambda 'return x;'
+
+binary_sensor:
+  - platform: homeassistant
+    id: beer_opener_ready
+    entity_id: binary_sensor.beer_opener_state_machine_is_ready
+    on_state:
+      then:
+        - lvgl.label.update:
+            id: beer_opener_status_label
+            text: !lambda 'return id(beer_opener_ready).state ? "Ready" : "Not ready";'
+  - platform: touchscreen
+    id: core2_button_a
+    page_id: core2_beer_opener_page
+    x_min: 0
+    x_max: 105
+    y_min: 207
+    y_max: 239
+    on_press:
+      - script.execute: core2_select_previous_beer
+  - platform: touchscreen
+    id: core2_button_b
+    page_id: core2_beer_opener_page
+    x_min: 107
+    x_max: 212
+    y_min: 207
+    y_max: 239
+    on_press:
+      - script.execute: core2_open_selected_beer
+  - platform: touchscreen
+    id: core2_button_c
+    page_id: core2_beer_opener_page
+    x_min: 214
+    x_max: 319
+    y_min: 207
+    y_max: 239
+    on_press:
+      - script.execute: core2_select_next_beer
+
 script:
-  - id: core2_open_menu
+  - id: core2_select_previous_beer
     then:
-      - globals.set: {id: core2_screen, value: '0'}
-      - lvgl.page.show: 
+      - homeassistant.action:
+          action: input_select.select_previous
+          target:
+            entity_id: input_select.beer_brands
+          data:
+            cycle: true
+  - id: core2_select_next_beer
+    then:
+      - homeassistant.action:
+          action: input_select.select_next
+          target:
+            entity_id: input_select.beer_brands
+          data:
+            cycle: true
+  - id: core2_open_selected_beer
+    then:
+      - if:
+          condition:
+            binary_sensor.is_on: beer_opener_ready
+          then:
+            - homeassistant.action:
+                action: script.open_beer
+                data_template:
+                  beer_brand: "{{ selected_brand }}"
+                variables:
+                  selected_brand: !lambda 'return id(beer_brand).state;'
 
 lvgl:
   displays: [core2_display]
@@ -30,96 +91,71 @@ lvgl:
   theme:
     dark_mode: true
   pages:
-    - id: core2_menu_page
+    - id: core2_beer_opener_page
       bg_color: 0x000000
       widgets:
+        - button:
+            x: 208
+            y: 8
+            width: 102
+            height: 32
+            radius: 2
+            bg_color: 0x1C1C20
+            border_width: 1
+            border_color: 0x69696E
+            on_click:
+              - lvgl.page.show:
+                  id: core2_beer_brands_coming_soon_page
+            widgets:
+              - label:
+                  align: CENTER
+                  text: Add brand
+                  text_font: roboto_small
+                  text_color: 0xFFFFFF
+        - image:
+            x: 24
+            y: 74
+            src: core2_menu_icon_beer
         - label:
-            x: 10
-            y: 5
-            text: Menu
+            id: beer_brand_label
+            x: 76
+            y: 77
+            width: 220
+            height: 42
+            text: Loading...
             text_font: roboto
             text_color: 0xFFFFFF
-        - button:
-            x: 10
-            y: 40
-            width: 145
-            height: 88
-            radius: 0
-            bg_color: 0x1C1C20
-            border_width: 1
-            border_color: 0x69696E
-            on_click:
-              - script.execute: core2_open_lights
-            widgets:
-              - image:
-                  align: TOP_MID
-                  y: 12
-                  src: core2_menu_icon_lights
-              - label:
-                  align: BOTTOM_MID
-                  y: -10
-                  text: Lights
-                  text_color: 0xFFFFFF
-        - button:
-            x: 165
-            y: 40
-            width: 145
-            height: 88
-            radius: 0
-            bg_color: 0x1C1C20
-            border_width: 1
-            border_color: 0x69696E
-            on_click:
-              - script.execute: core2_open_climate
-            widgets:
-              - image:
-                  align: TOP_MID
-                  y: 14
-                  src: core2_menu_icon_corona
-              - label:
-                  align: BOTTOM_MID
-                  y: -10
-                  text: Climate
-                  text_color: 0xFFFFFF
-        - button:
-            x: 10
-            y: 136
-            width: 145
-            height: 88
-            radius: 0
-            bg_color: 0x1C1C20
-            border_width: 1
-            border_color: 0x69696E
-            on_click:
-              - script.execute: core2_open_media
-            widgets:
-              - image:
-                  align: TOP_MID
-                  y: 12
-                  src: core2_menu_icon_corona
-              - label:
-                  align: BOTTOM_MID
-                  y: -10
-                  text: Media
-                  text_color: 0xFFFFFF
-        - button:
-            x: 165
-            y: 136
-            width: 145
-            height: 88
-            radius: 0
-            bg_color: 0x1C1C20
-            border_width: 1
-            border_color: 0x69696E
-            on_click:
-              - script.execute: core2_open_weather
-            widgets:
-              - image:
-                  align: TOP_MID
-                  y: 12
-                  src: core2_menu_icon_corona
-              - label:
-                  align: BOTTOM_MID
-                  y: -10
-                  text: Weather
-                  text_color: 0xFFFFFF
+        - label:
+            x: 76
+            y: 132
+            text: "Opener:"
+            text_font: roboto_small
+            text_color: 0xB8B8C0
+        - label:
+            id: beer_opener_status_label
+            x: 145
+            y: 132
+            text: Checking...
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            x: 26
+            y: 184
+            width: 80
+            text: A  Previous
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            x: 120
+            y: 184
+            width: 80
+            text: B  Open
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            x: 222
+            y: 184
+            width: 80
+            text: C  Next
+            text_font: roboto_small
+            text_color: 0xFFFFFF

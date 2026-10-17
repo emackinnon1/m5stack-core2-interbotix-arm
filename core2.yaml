@@ -1,0 +1,27 @@
+substitutions:
+  devicename: m5core2-beerbot-controller
+  friendly_name: M5Core2 Beerbot Controller
+
+  # Screen idle: dim then near-off backlight after inactivity. Set a timeout
+  # to "0s" to disable that stage.
+  screen_dim_timeout: "30s"
+  screen_off_timeout: "90s"
+  screen_dim_brightness: "20%"
+  screen_normal_brightness: "100%"
+
+esphome:
+  name: ${devicename}
+  friendly_name: ${friendly_name}
+  libraries:
+    - Wire
+
+packages:
+  hardware: !include src/main/hardware.yaml
+  network: !include src/main/network.yaml
+  idle: !include src/main/idle.yaml
+  # main_ui owns the shared LVGL config and stays first so the beer opener
+  # page is shown at boot.
+  main_ui: !include src/pages/main.yaml
+  beer_brands_coming_soon: !include src/pages/beer_brands_coming_soon.yaml
+
+
