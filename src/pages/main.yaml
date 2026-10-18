@@ -1,3 +1,9 @@
+globals:
+  - id: beer_opener_page_active
+    type: bool
+    restore_value: false
+    initial_value: 'true'
+
 image:
   - platform: file
     file: src/assets/images/beer-bottle.png
@@ -27,52 +33,60 @@ binary_sensor:
             text: !lambda 'return id(beer_opener_ready).state ? "Ready" : "Not ready";'
   - platform: touchscreen
     id: core2_button_a
-    page_id: core2_beer_opener_page
-    x_min: 0
-    x_max: 105
-    y_min: 207
-    y_max: 239
+    x_min: 10
+    x_max: 120
+    y_min: 240
+    y_max: 280
+    use_raw: true
     on_press:
       - script.execute: core2_select_previous_beer
   - platform: touchscreen
     id: core2_button_b
-    page_id: core2_beer_opener_page
-    x_min: 107
-    x_max: 212
-    y_min: 207
-    y_max: 239
+    x_min: 130
+    x_max: 200
+    y_min: 240
+    y_max: 280
+    use_raw: true
     on_press:
       - script.execute: core2_open_selected_beer
   - platform: touchscreen
     id: core2_button_c
-    page_id: core2_beer_opener_page
-    x_min: 214
-    x_max: 319
-    y_min: 207
-    y_max: 239
+    x_min: 230
+    x_max: 310
+    y_min: 240
+    y_max: 280
+    use_raw: true
     on_press:
       - script.execute: core2_select_next_beer
 
 script:
   - id: core2_select_previous_beer
     then:
-      - homeassistant.action:
-          action: input_select.select_previous
-          data:
-            entity_id: input_select.beer_brands
-            cycle: "true"
+      - if:
+          condition:
+            lambda: 'return id(beer_opener_page_active);'
+          then:
+            - homeassistant.action:
+                action: input_select.select_previous
+                data:
+                  entity_id: input_select.beer_brands
+                  cycle: "true"
   - id: core2_select_next_beer
     then:
-      - homeassistant.action:
-          action: input_select.select_next
-          data:
-            entity_id: input_select.beer_brands
-            cycle: "true"
+      - if:
+          condition:
+            lambda: 'return id(beer_opener_page_active);'
+          then:
+            - homeassistant.action:
+                action: input_select.select_next
+                data:
+                  entity_id: input_select.beer_brands
+                  cycle: "true"
   - id: core2_open_selected_beer
     then:
       - if:
           condition:
-            binary_sensor.is_on: beer_opener_ready
+            lambda: 'return id(beer_opener_page_active) && id(beer_opener_ready).state;'
           then:
             - homeassistant.action:
                 action: script.open_beer
@@ -91,6 +105,10 @@ lvgl:
   pages:
     - id: core2_beer_opener_page
       bg_color: 0x000000
+      on_load:
+        - globals.set:
+            id: beer_opener_page_active
+            value: 'true'
       widgets:
         - button:
             x: 208

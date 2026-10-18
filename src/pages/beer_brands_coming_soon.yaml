@@ -2,6 +2,10 @@ lvgl:
   pages:
     - id: core2_beer_brands_coming_soon_page
       bg_color: 0x000000
+      on_load:
+        - globals.set:
+            id: beer_opener_page_active
+            value: 'false'
       widgets:
         - button:
             x: 10
