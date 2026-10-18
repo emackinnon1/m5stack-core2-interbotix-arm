@@ -10,7 +10,7 @@ image:
     id: core2_menu_icon_beer
     type: RGB565
     transparency: alpha_channel
-    resize: 34x34
+    resize: 45x45
 
 text_sensor:
   - platform: homeassistant
@@ -71,7 +71,6 @@ script:
                 action: input_select.select_previous
                 data:
                   entity_id: input_select.beer_brands
-                  # cycle: "true"
   - id: core2_select_next_beer
     then:
       - if:
@@ -82,7 +81,6 @@ script:
                 action: input_select.select_next
                 data:
                   entity_id: input_select.beer_brands
-                  # cycle: "true"
   - id: core2_open_selected_beer
     then:
       - if:
