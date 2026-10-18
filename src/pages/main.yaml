@@ -249,7 +249,7 @@ lvgl:
             text_font: roboto_small
             text_color: 0xFFFFFF
         - label:
-            x: 232
+            x: 238
             y: 216
             width: 80
             text: Next
