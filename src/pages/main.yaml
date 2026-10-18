@@ -10,7 +10,7 @@ image:
     id: core2_menu_icon_beer
     type: RGB565
     transparency: alpha_channel
-    resize: 34x34
+    resize: 45x45
 
 text_sensor:
   - platform: homeassistant
