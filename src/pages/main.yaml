@@ -89,7 +89,8 @@ script:
           then:
             - logger.log: "Requesting next beer from Home Assistant"
             - homeassistant.action:
-                action: input_select.select_next
+                # action: input_select.select_next
+                service: input_select.select_next
                 data:
                   entity_id: input_select.beer_brands
                   cycle: "true"
