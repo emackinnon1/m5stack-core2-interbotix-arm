@@ -74,7 +74,7 @@ script:
                 action: input_select.select_previous
                 data:
                   entity_id: input_select.beer_brands
-                  cycle: "true"
+                  # cycle: "true"
                 on_success:
                   - logger.log: "Home Assistant selected previous beer"
                 on_error:
@@ -92,7 +92,7 @@ script:
                 action: input_select.select_next
                 data:
                   entity_id: input_select.beer_brands
-                  cycle: "true"
+                  # cycle: "true"
                 on_success:
                   - logger.log: "Home Assistant selected next beer"
                 on_error:
