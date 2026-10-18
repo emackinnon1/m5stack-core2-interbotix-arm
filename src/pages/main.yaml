@@ -26,11 +26,12 @@ binary_sensor:
   - platform: homeassistant
     id: beer_opener_ready
     entity_id: binary_sensor.beer_opener_state_machine_is_ready
+    trigger_on_initial_state: true
     on_state:
       then:
         - lvgl.label.update:
             id: beer_opener_status_label
-            text: !lambda 'return std::string(id(beer_opener_ready).state ? "Ready" : "Not ready");'
+            text: !lambda 'return std::string(x ? "Ready" : "Not ready");'
   - platform: touchscreen
     id: core2_button_a
     x_min: 10
