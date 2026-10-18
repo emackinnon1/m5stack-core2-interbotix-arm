@@ -2,7 +2,6 @@ substitutions:
   wifi_ssid: ""
   wifi_password: ""
   api_encryption_key: ""
-  ota_password: ""
   ap_fallback_password: ""
 
 logger:
@@ -10,10 +9,6 @@ logger:
 api:
   encryption:
     key: ${api_encryption_key}
-
-ota:
-  - platform: esphome
-    password: ${ota_password}
 
 wifi:
   ssid: ${wifi_ssid}
