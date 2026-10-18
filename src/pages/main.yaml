@@ -32,6 +32,33 @@ binary_sensor:
         - lvgl.label.update:
             id: beer_opener_status_label
             text: !lambda 'return std::string(x ? "Ready" : "Not ready");'
+  - platform: homeassistant
+    id: ros_process_running
+    entity_id: binary_sensor.ros_process_is_running
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.label.update:
+            id: ros_process_status_label
+            text: !lambda 'return std::string(x ? "Running" : "Stopped");'
+  - platform: homeassistant
+    id: beer_opener_running
+    entity_id: binary_sensor.beer_opener_state_machine_is_running
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.label.update:
+            id: beer_opener_running_status_label
+            text: !lambda 'return std::string(x ? "Running" : "Idle");'
+  - platform: homeassistant
+    id: ros_launch_process_running
+    entity_id: binary_sensor.ros_status_launch_process_running
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.label.update:
+            id: ros_launch_status_label
+            text: !lambda 'return std::string(x ? "Running" : "Stopped");'
   - platform: touchscreen
     id: core2_button_a
     x_min: 10
@@ -85,7 +112,12 @@ script:
     then:
       - if:
           condition:
-            lambda: 'return id(beer_opener_page_active) && id(beer_opener_ready).state;'
+            lambda: |-
+              return id(beer_opener_page_active) &&
+                     id(beer_opener_ready).state &&
+                     id(ros_process_running).state &&
+                     !id(beer_opener_running).state &&
+                     id(ros_launch_process_running).state;
           then:
             - homeassistant.action:
                 action: script.open_beer
@@ -129,47 +161,96 @@ lvgl:
                   text_color: 0xFFFFFF
         - image:
             x: 24
-            y: 74
+            y: 48
             src: core2_menu_icon_beer
         - label:
             id: beer_brand_label
             x: 76
-            y: 77
+            y: 55
             width: 220
             height: 42
             text: Loading...
             text_font: roboto
             text_color: 0xFFFFFF
         - label:
-            x: 76
-            y: 132
-            text: "Opener:"
+            x: 20
+            y: 105
+            text: "Open checks"
             text_font: roboto_small
             text_color: 0xB8B8C0
         - label:
             id: beer_opener_status_label
-            x: 145
-            y: 132
+            x: 215
+            y: 125
             text: Checking...
             text_font: roboto_small
             text_color: 0xFFFFFF
         - label:
+            x: 20
+            y: 125
+            width: 185
+            text: Opener ready
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            id: ros_process_status_label
+            x: 215
+            y: 146
+            text: Checking...
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            x: 20
+            y: 146
+            width: 185
+            text: ROS process
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            id: beer_opener_running_status_label
+            x: 215
+            y: 167
+            text: Checking...
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            x: 20
+            y: 167
+            width: 185
+            text: Opener state machine
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            id: ros_launch_status_label
+            x: 215
+            y: 188
+            text: Checking...
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
+            x: 20
+            y: 188
+            width: 185
+            text: ROS launch process
+            text_font: roboto_small
+            text_color: 0xFFFFFF
+        - label:
             x: 26
-            y: 184
+            y: 216
             width: 80
             text: Previous
             text_font: roboto_small
             text_color: 0xFFFFFF
         - label:
             x: 120
-            y: 184
+            y: 216
             width: 80
             text: Open
             text_font: roboto_small
             text_color: 0xFFFFFF
         - label:
             x: 222
-            y: 184
+            y: 216
             width: 80
             text: Next
             text_font: roboto_small
