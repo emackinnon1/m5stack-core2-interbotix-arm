@@ -14,14 +14,6 @@ esphome:
   friendly_name: ${friendly_name}
   libraries:
     - Wire
-  on_boot:
-    - priority: -100
-      then:
-        - lambda: |-
-            const uint8_t charge_control = id(axp192_id).Read8bit(0x33);
-            id(axp192_id).Write1Byte(0x33, charge_control & 0x7F);
-            ESP_LOGI("axp192", "Charge control register: 0x%02X",
-                     id(axp192_id).Read8bit(0x33));
 
 packages:
   hardware: !include src/main/hardware.yaml
