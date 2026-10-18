@@ -158,20 +158,20 @@ lvgl:
             x: 26
             y: 184
             width: 80
-            text: A  Previous
+            text: Previous
             text_font: roboto_small
             text_color: 0xFFFFFF
         - label:
             x: 120
             y: 184
             width: 80
-            text: B  Open
+            text: Open
             text_font: roboto_small
             text_color: 0xFFFFFF
         - label:
             x: 222
             y: 184
             width: 80
-            text: C  Next
+            text: Next
             text_font: roboto_small
             text_color: 0xFFFFFF
