@@ -40,6 +40,7 @@ binary_sensor:
     y_max: 280
     use_raw: true
     on_press:
+      - logger.log: "Beer button A touch detected"
       - script.execute: core2_select_previous_beer
   - platform: touchscreen
     id: core2_button_b
@@ -58,6 +59,7 @@ binary_sensor:
     y_max: 280
     use_raw: true
     on_press:
+      - logger.log: "Beer button C touch detected"
       - script.execute: core2_select_next_beer
 
 script:
@@ -67,22 +69,36 @@ script:
           condition:
             lambda: 'return id(beer_opener_page_active);'
           then:
+            - logger.log: "Requesting previous beer from Home Assistant"
             - homeassistant.action:
                 action: input_select.select_previous
                 data:
                   entity_id: input_select.beer_brands
                   cycle: "true"
+                on_success:
+                  - logger.log: "Home Assistant selected previous beer"
+                on_error:
+                  - logger.log: "Home Assistant previous beer action failed"
+          else:
+            - logger.log: "Ignoring button A because beer opener page is inactive"
   - id: core2_select_next_beer
     then:
       - if:
           condition:
             lambda: 'return id(beer_opener_page_active);'
           then:
+            - logger.log: "Requesting next beer from Home Assistant"
             - homeassistant.action:
                 action: input_select.select_next
                 data:
                   entity_id: input_select.beer_brands
                   cycle: "true"
+                on_success:
+                  - logger.log: "Home Assistant selected next beer"
+                on_error:
+                  - logger.log: "Home Assistant next beer action failed"
+          else:
+            - logger.log: "Ignoring button C because beer opener page is inactive"
   - id: core2_open_selected_beer
     then:
       - if:
