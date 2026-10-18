@@ -10,7 +10,7 @@ image:
     id: core2_menu_icon_beer
     type: RGB565
     transparency: alpha_channel
-    resize: 45x45
+    resize: 55x55
 
 text_sensor:
   - platform: homeassistant
@@ -161,7 +161,7 @@ lvgl:
                   text_color: 0xFFFFFF
         - image:
             x: 24
-            y: 48
+            y: 28
             src: core2_menu_icon_beer
         - label:
             id: beer_brand_label
@@ -242,7 +242,7 @@ lvgl:
             text_font: roboto_small
             text_color: 0xFFFFFF
         - label:
-            x: 130
+            x: 140
             y: 216
             width: 80
             text: Open
